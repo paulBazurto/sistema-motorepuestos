@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+
+<div class="row">
+    <div class="col-md-5">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <div class="card card-body">
+            <form action="/add_compra" method="POST">
+                <div class="form-group">
+                    <input type="text" name="fecha_compra" placeholder="Fecha Compra" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="numero_factura" placeholder="Numero Factura" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="id_proveedor" placeholder="ID Proveedor" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="id_empleado" placeholder="ID Empleado" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <select name="estado_compra" class="form-control border-0 border-bottom rounded-0">
+                        <option value="PENDIENTE">PENDIENTE</option>
+                        <option value="PAGADA">PAGADA</option>
+                        <option value="ANULADA">ANULADA</option>
+                    </select>
+                </div>
+                <div class="form-group mt-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="col-md-7">
+        <table class="table table-striped table-bordered bg-white table-sm">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>Fecha Compra</td>
+                    <td>Numero Factura</td>
+                    <td>ID Proveedor</td>
+                    <td>ID Empleado</td>
+                    <td>Subtotal</td>
+                    <td>IVA</td>
+                    <td>Total Compra</td>
+                    <td>Estado Compra</td>
+                    <td>Operations</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for compra in compras %}
+                <tr>
+                    <td>{{ compra.0 }}</td>
+                    <td>{{ compra.1 }}</td>
+                    <td>{{ compra.2 }}</td>
+                    <td>{{ compra.3 }}</td>
+                    <td>{{ compra.4 }}</td>
+                    <td>{{ compra.5 }}</td>
+                    <td>{{ compra.6 }}</td>
+                    <td>{{ compra.7 }}</td>
+                    <td>{{ compra.8 }}</td>
+                    <td>
+                        <a href="/editar_compra/{{ compra.0 }}" class="btn btn-secondary">Editar</a>
+                        <a href="/eliminar_compra/{{ compra.0 }}" class="btn btn-danger
+                         btn-delete">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="col-md-4 offset-md-4">
+
+    <div class="card card-body">
+
+        <form action="/update_compra/{{ compra.0 }}" method="POST">
+
+            <div class="form-group">
+                <input type="text" name="fecha_compra" placeholder="Fecha Compra" value="{{ compra.1 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="numero_factura" placeholder="Numero Factura" value="{{ compra.2 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="id_proveedor" placeholder="ID Proveedor" value="{{ compra.3 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="id_empleado" placeholder="ID Empleado" value="{{ compra.4 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <select name="estado_compra" class="form-control">
+                    <option value="PENDIENTE" {% if compra.8 == 'PENDIENTE' %}selected{% endif %}>PENDIENTE</option>
+                    <option value="PAGADA" {% if compra.8 == 'PAGADA' %}selected{% endif %}>PAGADA</option>
+                    <option value="ANULADA" {% if compra.8 == 'ANULADA' %}selected{% endif %}>ANULADA</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-block w-100">
+                    Guardar
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

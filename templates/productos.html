@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+
+<div class="row">
+    <div class="col-md-5">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <div class="card card-body">
+            <form action="/add_producto" method="POST">
+                <div class="form-group">
+                    <input type="text" name="nombre_producto" placeholder="Nombre Producto" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="marca" placeholder="Marca" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="descripcion" placeholder="Descripcion" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="precio_compra" placeholder="Precio Compra" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="precio_venta" placeholder="Precio Venta" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="stock_actual" placeholder="Stock Actual" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="stock_minimo" placeholder="Stock Minimo" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="id_categoria" placeholder="ID Categoria" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group mt-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="col-md-7">
+        <table class="table table-striped table-bordered bg-white table-sm">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>Producto</td>
+                    <td>Marca</td>
+                    <td>Descripcion</td>
+                    <td>Precio Compra</td>
+                    <td>Precio Venta</td>
+                    <td>Stock Actual</td>
+                    <td>Stock Minimo</td>
+                    <td>ID Categoria</td>
+                    <td>Estado</td>
+                    <td>Operations</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td>{{ producto.0 }}</td>
+                    <td>{{ producto.1 }}</td>
+                    <td>{{ producto.2 }}</td>
+                    <td>{{ producto.3 }}</td>
+                    <td>{{ producto.4 }}</td>
+                    <td>{{ producto.5 }}</td>
+                    <td>{{ producto.6 }}</td>
+                    <td>{{ producto.7 }}</td>
+                    <td>{{ producto.8 }}</td>
+                    <td>{{ producto.9 }}</td>
+                    <td>
+                        <a href="/editar_producto/{{ producto.0 }}" class="btn btn-secondary">Editar</a>
+                        <a href="/eliminar_producto/{{ producto.0 }}" class="btn btn-danger
+                         btn-delete">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

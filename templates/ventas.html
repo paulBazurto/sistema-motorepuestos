@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+
+<div class="row">
+    <div class="col-md-5">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <div class="card card-body">
+            <form action="/add_venta" method="POST">
+                <div class="form-group">
+                    <input type="text" name="fecha_venta" placeholder="Fecha Venta" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="id_cliente" placeholder="ID Cliente" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="id_empleado" placeholder="ID Empleado" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <select name="metodo_pago" class="form-control border-0 border-bottom rounded-0">
+                        <option value="EFECTIVO">EFECTIVO</option>
+                        <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                        <option value="TARJETA">TARJETA</option>
+                        <option value="CREDITO">CREDITO</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select name="estado_venta" class="form-control border-0 border-bottom rounded-0">
+                        <option value="PAGADA">PAGADA</option>
+                        <option value="PENDIENTE">PENDIENTE</option>
+                        <option value="ANULADA">ANULADA</option>
+                    </select>
+                </div>
+                <div class="form-group mt-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="col-md-7">
+        <table class="table table-striped table-bordered bg-white table-sm">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>Fecha Venta</td>
+                    <td>ID Cliente</td>
+                    <td>ID Empleado</td>
+                    <td>Subtotal</td>
+                    <td>Descuento</td>
+                    <td>IVA</td>
+                    <td>Total Venta</td>
+                    <td>Método Pago</td>
+                    <td>Estado Venta</td>
+                    <td>Operations</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venta in ventas %}
+                <tr>
+                    <td>{{ venta.0 }}</td>
+                    <td>{{ venta.1 }}</td>
+                    <td>{{ venta.2 }}</td>
+                    <td>{{ venta.3 }}</td>
+                    <td>{{ venta.4 }}</td>
+                    <td>{{ venta.5 }}</td>
+                    <td>{{ venta.6 }}</td>
+                    <td>{{ venta.7 }}</td>
+                    <td>{{ venta.8 }}</td>
+                    <td>{{ venta.9 }}</td>
+                    <td>
+                        <a href="/editar_venta/{{ venta.0 }}" class="btn btn-secondary">Editar</a>
+                        <a href="/eliminar_venta/{{ venta.0 }}" class="btn btn-danger
+                         btn-delete">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

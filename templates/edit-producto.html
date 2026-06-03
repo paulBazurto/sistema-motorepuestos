@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="col-md-4 offset-md-4">
+
+    <div class="card card-body">
+
+        <form action="/update_producto/{{ producto.0 }}" method="POST">
+
+            <div class="form-group">
+                <input type="text" name="nombre_producto" placeholder="Nombre Producto" value="{{ producto.1 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="marca" placeholder="Marca" value="{{ producto.2 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="descripcion" placeholder="Descripcion" value="{{ producto.3 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="number" step="0.01" name="precio_compra" placeholder="Precio Compra" value="{{ producto.4 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="number" step="0.01" name="precio_venta" placeholder="Precio Venta" value="{{ producto.5 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="number" name="stock_actual" placeholder="Stock Actual" value="{{ producto.6 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="number" name="stock_minimo" placeholder="Stock Minimo" value="{{ producto.7 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="number" name="id_categoria" placeholder="ID Categoria" value="{{ producto.8 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-block w-100">
+                    Guardar
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

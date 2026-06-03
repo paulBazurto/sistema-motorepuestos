@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+
+<div class="row">
+    <div class="col-md-5">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <div class="card card-body">
+            <form action="/add_persona" method="POST">
+                <div class="form-group">
+                    <select name="tipo_persona" class="form-control border-0 border-bottom rounded-0">
+                        <option value="CLIENTE">Cliente</option>
+                        <option value="PROVEEDOR">Proveedor</option>
+                        <option value="EMPLEADO">Empleado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="nombres" placeholder="Nombres" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="apellidos" placeholder="Apellidos" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="cedula_ruc" placeholder="Cédula o RUC" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="telefono" placeholder="Teléfono" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="correo" placeholder="Correo" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="direccion" placeholder="Dirección" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="cargo" placeholder="Cargo" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="form-group mt-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="col-md-7">
+        <table class="table table-striped table-bordered bg-white table-sm">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>Tipo</td>
+                    <td>Nombres</td>
+                    <td>Apellidos</td>
+                    <td>Cédula/RUC</td>
+                    <td>Teléfono</td>
+                    <td>Correo</td>
+                    <td>Dirección</td>
+                    <td>Cargo</td>
+                    <td>Estado</td>
+                    <td>Operations</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for persona in personas %}
+                <tr>
+                    <td>{{ persona.0 }}</td>
+                    <td>{{ persona.1 }}</td>
+                    <td>{{ persona.2 }}</td>
+                    <td>{{ persona.3 }}</td>
+                    <td>{{ persona.4 }}</td>
+                    <td>{{ persona.5 }}</td>
+                    <td>{{ persona.6 }}</td>
+                    <td>{{ persona.7 }}</td>
+                    <td>{{ persona.8 }}</td>
+                    <td>{{ persona.9 }}</td>
+                    <td>
+                        <a href="/editar_persona/{{ persona.0 }}" class="btn btn-secondary">Editar</a>
+                        <a href="/eliminar_persona/{{ persona.0 }}" class="btn btn-danger
+                         btn-delete">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

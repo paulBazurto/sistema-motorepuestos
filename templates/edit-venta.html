@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="col-md-4 offset-md-4">
+
+    <div class="card card-body">
+
+        <form action="/update_venta/{{ venta.0 }}" method="POST">
+
+            <div class="form-group">
+                <input type="text" name="fecha_venta" placeholder="Fecha Venta" value="{{ venta.1 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="id_cliente" placeholder="ID Cliente" value="{{ venta.2 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="id_empleado" placeholder="ID Empleado" value="{{ venta.3 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <select name="metodo_pago" class="form-control">
+                    <option value="EFECTIVO" {% if venta.8 == 'EFECTIVO' %}selected{% endif %}>EFECTIVO</option>
+                    <option value="TRANSFERENCIA" {% if venta.8 == 'TRANSFERENCIA' %}selected{% endif %}>TRANSFERENCIA</option>
+                    <option value="TARJETA" {% if venta.8 == 'TARJETA' %}selected{% endif %}>TARJETA</option>
+                    <option value="CREDITO" {% if venta.8 == 'CREDITO' %}selected{% endif %}>CREDITO</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <select name="estado_venta" class="form-control">
+                    <option value="PAGADA" {% if venta.9 == 'PAGADA' %}selected{% endif %}>PAGADA</option>
+                    <option value="PENDIENTE" {% if venta.9 == 'PENDIENTE' %}selected{% endif %}>PENDIENTE</option>
+                    <option value="ANULADA" {% if venta.9 == 'ANULADA' %}selected{% endif %}>ANULADA</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-block w-100">
+                    Guardar
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

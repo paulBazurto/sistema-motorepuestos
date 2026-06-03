@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="col-md-4 offset-md-4">
+
+    <div class="card card-body">
+
+        <form action="/update_persona/{{ persona.0 }}" method="POST">
+
+            <div class="form-group">
+                <select name="tipo_persona" class="form-control">
+                    <option value="CLIENTE" {% if persona.1 == 'CLIENTE' %}selected{% endif %}>CLIENTE</option>
+                    <option value="PROVEEDOR" {% if persona.1 == 'PROVEEDOR' %}selected{% endif %}>PROVEEDOR</option>
+                    <option value="EMPLEADO" {% if persona.1 == 'EMPLEADO' %}selected{% endif %}>EMPLEADO</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="nombres" placeholder="Nombres" value="{{ persona.2 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="apellidos" placeholder="Apellidos" value="{{ persona.3 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="cedula_ruc" placeholder="Cedula o RUC" value="{{ persona.4 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="telefono" placeholder="Telefono" value="{{ persona.5 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="correo" placeholder="Correo" value="{{ persona.6 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="direccion" placeholder="Direccion" value="{{ persona.7 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="cargo" placeholder="Cargo" value="{{ persona.8 }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-block w-100">
+                    Guardar
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
