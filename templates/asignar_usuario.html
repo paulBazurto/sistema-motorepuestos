@@ -16,4 +16,18 @@
         </form>
     </div>
 </div>
+
+<script>
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const usuario = form.querySelector('[name="usuario"]').value.trim();
+        const contrasena = form.querySelector('[name="contrasena"]').value;
+        if (usuario && contrasena) {
+            if (!confirm('¿Estás seguro de que deseas cambiar el usuario/contraseña de este empleado?')) {
+                e.preventDefault();
+            }
+        }
+    });
+</script>
+
 {% endblock %}

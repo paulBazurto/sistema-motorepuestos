@@ -2,7 +2,10 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from flask_mysqldb import MySQL
 from functools import wraps
 import hashlib
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
 
+import hashlib
 app = Flask(__name__)
 
 # Mysql Connection
@@ -13,8 +16,128 @@ app.config["MYSQL_DB"] = "motorepuestos"
 app.config["MYSQL_PORT"] = 3307
 mysql = MySQL(app)
 
+
+
 # Settings
 app.secret_key = "mysecretkey"
+
+
+
+# Configuración de Gmail
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'jbazurto3977@utm.edu.ec'
+app.config['MAIL_PASSWORD'] = 'nfrk hihs sfcz ksif'  
+app.config['MAIL_DEFAULT_SENDER'] = 'jbazurto3977@utm.edu.ec'
+
+mail = Mail(app)
+serializer = URLSafeTimedSerializer(app.secret_key)
+
+@app.route("/forgot_password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form["email"]
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT id_persona, nombres, apellidos 
+            FROM personas 
+            WHERE correo = %s AND tipo_persona = 'EMPLEADO' AND estado = 'ACTIVO'
+        """, (email,))
+        empleado = cur.fetchone()
+        
+        if empleado:
+            # Token válido por 1 hora
+            token = serializer.dumps(email, salt='reset')
+            link = url_for('reset_password', token=token, _external=True)
+            
+            msg = Message('Recuperación de contraseña - Motorepuestos',
+                          recipients=[email])
+            msg.body = f"""Hola {empleado[1]} {empleado[2]},
+
+Para restablecer tu contraseña, haz clic en el siguiente enlace (válido por 1 hora):
+{link}
+
+Si no solicitaste este cambio, ignora el mensaje.
+
+Saludos,
+Sistema Motorepuestos"""
+            mail.send(msg)
+            flash("Te hemos enviado un enlace de recuperación a tu correo electrónico.")
+        else:
+            # Por seguridad, no revelamos si el correo existe
+            flash("Si el correo pertenece a un empleado activo, recibirás instrucciones.")
+        return redirect(url_for('login'))
+    
+    return render_template("forgot_password.html")
+
+
+@app.route("/reset_password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    try:
+        email = serializer.loads(token, salt='reset', max_age=3600)
+        print(f"CORREO DEL TOKEN: '{email}'")  
+    except Exception as e:
+        print("Error al decodificar token:", e)
+        flash("El enlace es inválido o ha expirado. Solicita uno nuevo.")
+        return redirect(url_for('forgot_password'))
+    
+    if request.method == "POST":
+        nueva = request.form["contrasena"]
+        confirmar = request.form["confirmar"]
+        
+        if nueva != confirmar:
+            flash("Las contraseñas no coinciden.")
+            return redirect(url_for('reset_password', token=token))
+        
+        if len(nueva) < 6:
+            flash("La contraseña debe tener al menos 6 caracteres.")
+            return redirect(url_for('reset_password', token=token))
+        
+        hash_pwd = hashlib.sha256(nueva.encode()).hexdigest()
+        
+        cur = mysql.connection.cursor()
+        # Ejecuta la actualización y guarda cuántas filas se modificaron
+        cur.execute("""
+            UPDATE personas SET contrasena = %s 
+            WHERE correo = %s AND tipo_persona = 'EMPLEADO'
+        """, (hash_pwd, email))
+        filas_actualizadas = cur.rowcount   # número de filas afectadas
+        mysql.connection.commit()
+        
+        print(f"Filas actualizadas: {filas_actualizadas}") 
+        
+        if filas_actualizadas == 0:
+            flash("No se encontró un empleado con ese correo exacto. Contacta al administrador.")
+            return redirect(url_for('forgot_password'))
+        
+        flash("Contraseña actualizada correctamente. Ahora puedes iniciar sesión.")
+        return redirect(url_for('login'))
+    
+    return render_template("reset_password.html", token=token)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Decorador para proteger rutas
