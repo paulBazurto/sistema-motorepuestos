@@ -1,12 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_mysqldb import MySQL
+from functools import wraps
+import hashlib
 
 app = Flask(__name__)
 
 # Mysql Connection
 app.config["MYSQL_HOST"] = "localhost"
 app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = ""  # Bro  si tienes contraseña ponla aquí sino deja vacía
+app.config["MYSQL_PASSWORD"] = ""  
 app.config["MYSQL_DB"] = "motorepuestos"   
 app.config["MYSQL_PORT"] = 3307
 mysql = MySQL(app)
@@ -15,9 +17,61 @@ mysql = MySQL(app)
 app.secret_key = "mysecretkey"
 
 
+# Decorador para proteger rutas
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'empleado_id' not in session:
+            flash("Debes iniciar sesión para acceder")
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# AUTH
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if 'empleado_id' in session:
+        return redirect(url_for('Index'))
+    
+    if request.method == "POST":
+        usuario = request.form["usuario"]
+        contrasena = request.form["contrasena"]
+        contrasena_hash = hashlib.sha256(contrasena.encode()).hexdigest()
+
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT id_persona, nombres, apellidos, cargo 
+            FROM personas 
+            WHERE usuario = %s AND contrasena = %s 
+              AND tipo_persona = 'EMPLEADO' AND estado = 'ACTIVO'
+        """, (usuario, contrasena_hash))
+        empleado = cur.fetchone()
+
+        if empleado:
+            session['empleado_id'] = empleado[0]
+            session['empleado_nombre'] = f"{empleado[1]} {empleado[2]}"
+            session['empleado_cargo'] = empleado[3]
+            flash(f"Bienvenido, {empleado[1]}!")
+            return redirect(url_for('Index'))
+        else:
+            flash("Usuario o contraseña incorrectos")
+            return redirect(url_for('login'))
+
+    return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("Sesión cerrada correctamente")
+    return redirect(url_for('login'))
+
+
 # PERSONAS
 
 @app.route("/")
+@login_required
 def Index():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM personas")
@@ -130,6 +184,7 @@ def delete_persona(id):
 # CATEGORIAS
 
 @app.route("/categorias")
+@login_required
 def categorias():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM categorias")
@@ -199,9 +254,51 @@ def delete_categoria(id):
     return redirect(url_for("categorias"))
 
 
+# USUARIOS EMPLEADOS
+
+@app.route("/asignar_usuario/<id>", methods=["GET", "POST"])
+@login_required
+def asignar_usuario(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM personas WHERE id_persona = %s AND tipo_persona = 'EMPLEADO'", (id,))
+    empleado = cur.fetchone()
+
+    if not empleado:
+        flash("El empleado no existe")
+        return redirect(url_for('Index'))
+
+    if request.method == "POST":
+        usuario = request.form["usuario"]
+        contrasena = request.form["contrasena"]
+
+        if not usuario or not contrasena:
+            flash("Usuario y contraseña son obligatorios")
+            return redirect(url_for('asignar_usuario', id=id))
+
+        # Verificar que el usuario no esté en uso por otro empleado
+        cur.execute("SELECT id_persona FROM personas WHERE usuario = %s AND id_persona != %s", (usuario, id))
+        existente = cur.fetchone()
+        if existente:
+            flash("Ese nombre de usuario ya está en uso")
+            return redirect(url_for('asignar_usuario', id=id))
+
+        contrasena_hash = hashlib.sha256(contrasena.encode()).hexdigest()
+
+        cur.execute("""
+            UPDATE personas SET usuario = %s, contrasena = %s
+            WHERE id_persona = %s
+        """, (usuario, contrasena_hash, id))
+        mysql.connection.commit()
+
+        flash("Usuario asignado satisfactoriamente")
+        return redirect(url_for('Index'))
+
+    return render_template("asignar_usuario.html", empleado=empleado)
+
 # PRODUCTOS
 
 @app.route("/productos")
+@login_required
 def productos():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM productos")
@@ -329,6 +426,7 @@ def delete_producto(id):
 # COMPRAS
 
 @app.route("/compras")
+@login_required
 def compras():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM compras")
@@ -441,6 +539,7 @@ def delete_compra(id):
 # DETALLE COMPRAS
 
 @app.route("/detalle_compras")
+@login_required
 def detalle_compras():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM detalle_compras")
@@ -635,6 +734,7 @@ def delete_detalle_compra(id):
 # VENTAS
 
 @app.route("/ventas")
+@login_required
 def ventas():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM ventas")
@@ -738,6 +838,7 @@ def delete_venta(id):
 # DETALLE VENTAS
 
 @app.route("/detalle_ventas")
+@login_required
 def detalle_ventas():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM detalle_ventas")

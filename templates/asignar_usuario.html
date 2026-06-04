@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="col-md-4 offset-md-4">
+    <h5 class="mb-3">Asignar usuario a: <strong>{{ empleado[2] }} {{ empleado[3] }}</strong></h5>
+    <div class="card card-body">
+        <form action="/asignar_usuario/{{ empleado[0] }}" method="POST">
+            <div class="form-group mb-2">
+                <input type="text" name="usuario" placeholder="Nombre de usuario"
+                       value="{{ empleado[10] or '' }}" class="form-control" required>
+            </div>
+            <div class="form-group mb-3">
+                <input type="password" name="contrasena" placeholder="Nueva contraseña"
+                       class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-success w-100">Guardar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

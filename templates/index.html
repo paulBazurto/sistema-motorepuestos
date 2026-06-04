@@ -26,25 +26,32 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="nombres" placeholder="Nombres" class="form-control border-0 border-bottom rounded-0">
+                    <input type="text" name="nombres" placeholder="Nombres"
+                        class="form-control border-0 border-bottom rounded-0">
                 </div>
                 <div class="form-group">
-                    <input type="text" name="apellidos" placeholder="Apellidos" class="form-control border-0 border-bottom rounded-0">
+                    <input type="text" name="apellidos" placeholder="Apellidos"
+                        class="form-control border-0 border-bottom rounded-0">
                 </div>
                 <div class="form-group">
-                    <input type="text" name="cedula_ruc" placeholder="Cédula o RUC" class="form-control border-0 border-bottom rounded-0">
+                    <input type="text" name="cedula_ruc" placeholder="Cédula o RUC"
+                        class="form-control border-0 border-bottom rounded-0">
                 </div>
                 <div class="form-group">
-                    <input type="text" name="telefono" placeholder="Teléfono" class="form-control border-0 border-bottom rounded-0">
+                    <input type="text" name="telefono" placeholder="Teléfono"
+                        class="form-control border-0 border-bottom rounded-0">
                 </div>
                 <div class="form-group">
-                    <input type="text" name="correo" placeholder="Correo" class="form-control border-0 border-bottom rounded-0">
+                    <input type="text" name="correo" placeholder="Correo"
+                        class="form-control border-0 border-bottom rounded-0">
                 </div>
                 <div class="form-group">
-                    <input type="text" name="direccion" placeholder="Dirección" class="form-control border-0 border-bottom rounded-0">
+                    <input type="text" name="direccion" placeholder="Dirección"
+                        class="form-control border-0 border-bottom rounded-0">
                 </div>
                 <div class="form-group">
-                    <input type="text" name="cargo" placeholder="Cargo" class="form-control border-0 border-bottom rounded-0">
+                    <input type="text" name="cargo" placeholder="Cargo"
+                        class="form-control border-0 border-bottom rounded-0">
                 </div>
                 <div class="form-group mt-3">
                     <button type="submit" class="btn btn-primary w-100">
@@ -87,9 +94,12 @@
                     <td>{{ persona.8 }}</td>
                     <td>{{ persona.9 }}</td>
                     <td>
-                        <a href="/editar_persona/{{ persona.0 }}" class="btn btn-secondary">Editar</a>
-                        <a href="/eliminar_persona/{{ persona.0 }}" class="btn btn-danger
-                         btn-delete">Eliminar</a>
+                        <a href="/editar_persona/{{ persona.0 }}" class="btn btn-secondary btn-sm">Editar</a>
+                        <a href="/eliminar_persona/{{ persona.0 }}"
+                            class="btn btn-danger btn-sm btn-delete">Eliminar</a>
+                        {% if persona.1 == 'EMPLEADO' %}
+                        <a href="/asignar_usuario/{{ persona.0 }}" class="btn btn-info btn-sm">Usuario</a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
