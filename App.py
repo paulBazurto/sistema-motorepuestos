@@ -208,13 +208,29 @@ def add_persona():
         tipo_persona = request.form["tipo_persona"]
         nombres = request.form["nombres"]
         apellidos = request.form["apellidos"]
-        cedula_ruc = request.form["cedula_ruc"]
+        cedula_ruc = request.form["cedula_ruc"].strip()
         telefono = request.form["telefono"]
         correo = request.form["correo"]
         direccion = request.form["direccion"]
         cargo = request.form["cargo"]
 
+        if len(cedula_ruc) > 10:
+            flash("La cédula no puede tener más de 10 caracteres")
+            return redirect(url_for("Index"))
+
+        if cedula_ruc == "":
+            cedula_ruc = None
+
         cur = mysql.connection.cursor()
+
+        if cedula_ruc != None:
+            cur.execute("SELECT * FROM personas WHERE cedula_ruc = %s", (cedula_ruc,))
+            persona = cur.fetchall()
+
+            if len(persona) > 0:
+                flash("La cédula ingresada ya está registrada")
+                return redirect(url_for("Index"))
+
         cur.execute("""
             INSERT INTO personas 
             (tipo_persona, nombres, apellidos, cedula_ruc, telefono, correo, direccion, cargo)
@@ -240,13 +256,29 @@ def update_persona(id):
         tipo_persona = request.form["tipo_persona"]
         nombres = request.form["nombres"]
         apellidos = request.form["apellidos"]
-        cedula_ruc = request.form["cedula_ruc"]
+        cedula_ruc = request.form["cedula_ruc"].strip()
         telefono = request.form["telefono"]
         correo = request.form["correo"]
         direccion = request.form["direccion"]
         cargo = request.form["cargo"]
 
+        if len(cedula_ruc) > 10:
+            flash("La cédula no puede tener más de 10 caracteres")
+            return redirect(url_for("Index"))
+
+        if cedula_ruc == "":
+            cedula_ruc = None
+
         cur = mysql.connection.cursor()
+
+        if cedula_ruc != None:
+            cur.execute("SELECT * FROM personas WHERE cedula_ruc = %s AND id_persona != %s", (cedula_ruc, id))
+            persona = cur.fetchall()
+
+            if len(persona) > 0:
+                flash("La cédula ingresada ya está registrada")
+                return redirect(url_for("Index"))
+
         cur.execute("""
             UPDATE personas
             SET tipo_persona = %s,
