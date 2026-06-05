@@ -13,7 +13,7 @@ app.config["MYSQL_HOST"] = "localhost"
 app.config["MYSQL_USER"] = "root"
 app.config["MYSQL_PASSWORD"] = ""  
 app.config["MYSQL_DB"] = "motorepuestos"   
-#app.config["MYSQL_PORT"] = 3307
+app.config["MYSQL_PORT"] = 3307
 mysql = MySQL(app)
 
 
@@ -23,7 +23,7 @@ app.secret_key = "mysecretkey"
 
 
 
-# Configuración de Gmail
+# Configuracion de Gmail
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -196,10 +196,25 @@ def logout():
 @app.route("/")
 @login_required
 def Index():
+    search = request.args.get('search', '').strip()
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM personas")
-    data = cur.fetchall()
-    return render_template("index.html", personas=data)
+    
+    if search:
+        
+        cur.execute("""
+            SELECT * FROM personas 
+            WHERE CAST(id_persona AS CHAR) LIKE %s 
+               OR nombres LIKE %s 
+               OR apellidos LIKE %s 
+               OR cedula_ruc LIKE %s 
+               OR correo LIKE %s
+            ORDER BY id_persona DESC
+        """, (f'%{search}%', f'%{search}%', f'%{search}%', f'%{search}%', f'%{search}%'))
+    else:
+        cur.execute("SELECT * FROM personas ORDER BY id_persona DESC")
+    
+    personas = cur.fetchall()
+    return render_template("index.html", personas=personas, search=search)
 
 
 @app.route("/add_persona", methods=["POST"])
@@ -455,12 +470,36 @@ def asignar_usuario(id):
 @app.route("/productos")
 @login_required
 def productos():
+    search = request.args.get('search', '').strip()
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM productos")
-    data = cur.fetchall()
+    
+    if search:
+        cur.execute("""
+            SELECT p.*, c.nombre_categoria 
+            FROM productos p
+            LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
+            WHERE p.nombre_producto LIKE %s 
+               OR p.marca LIKE %s 
+               OR p.descripcion LIKE %s
+               OR c.nombre_categoria LIKE %s
+            ORDER BY p.id_producto DESC
+        """, (f'%{search}%', f'%{search}%', f'%{search}%', f'%{search}%'))
+        productos = cur.fetchall()
+    else:
+        cur.execute("""
+            SELECT p.*, c.nombre_categoria 
+            FROM productos p
+            LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
+            ORDER BY p.id_producto DESC
+        """)
+        productos = cur.fetchall()
+    
+    
     cur.execute("SELECT id_categoria, nombre_categoria FROM categorias")
     categorias = cur.fetchall()
-    return render_template("productos.html", productos=data, categorias=categorias)
+    
+    return render_template("productos.html", productos=productos, categorias=categorias, search=search)
+
 
 
 @app.route("/add_producto", methods=["POST"])
@@ -587,15 +626,54 @@ def delete_producto(id):
 @app.route("/compras")
 @login_required
 def compras():
+    search = request.args.get('search', '').strip()
+    fecha_desde = request.args.get('fecha_desde', '')
+    fecha_hasta = request.args.get('fecha_hasta', '')
+    estado = request.args.get('estado', '')
+    
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM compras")
-    data = cur.fetchall()
+    
+   
+    query = """
+        SELECT c.*, p.nombres as proveedor_nombre, e.nombres as empleado_nombre
+        FROM compras c
+        LEFT JOIN personas p ON c.id_proveedor = p.id_persona
+        LEFT JOIN personas e ON c.id_empleado = e.id_persona
+        WHERE 1=1
+    """
+    params = []
+    
+    if search:
+        query += """ AND (c.numero_factura LIKE %s 
+                         OR p.nombres LIKE %s 
+                         OR p.apellidos LIKE %s
+                         OR DATE(c.fecha_compra) LIKE %s
+                         OR c.estado_compra LIKE %s)"""
+        search_param = f'%{search}%'
+        params.extend([search_param, search_param, search_param, search_param, search_param])
+    
+    if fecha_desde:
+        query += " AND c.fecha_compra >= %s"
+        params.append(fecha_desde)
+    if fecha_hasta:
+        query += " AND c.fecha_compra <= %s"
+        params.append(fecha_hasta)
+    if estado:
+        query += " AND c.estado_compra = %s"
+        params.append(estado)
+    
+    query += " ORDER BY c.id_compra DESC"
+    cur.execute(query, params)
+    compras = cur.fetchall()
+    
+    # Para los selects del formulario de creación (proveedores y empleados)
     cur.execute("SELECT id_persona, nombres, apellidos FROM personas WHERE tipo_persona = 'PROVEEDOR' AND estado = 'ACTIVO'")
     proveedores = cur.fetchall()
     cur.execute("SELECT id_persona, nombres, apellidos FROM personas WHERE tipo_persona = 'EMPLEADO' AND estado = 'ACTIVO'")
     empleados = cur.fetchall()
-    return render_template("compras.html", compras=data, proveedores=proveedores, empleados=empleados)
-
+    
+    return render_template("compras.html", compras=compras, proveedores=proveedores, empleados=empleados,
+                           search=search, fecha_desde=fecha_desde, fecha_hasta=fecha_hasta, estado=estado)
 
 @app.route("/add_compra", methods=["POST"])
 def add_compra():
@@ -903,19 +981,43 @@ def delete_detalle_compra(id):
 
 
 # VENTAS
-
 @app.route("/ventas")
 @login_required
 def ventas():
+    search = request.args.get('search', '').strip()
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM ventas")
-    data = cur.fetchall()
+    
+    if search:
+        cur.execute("""
+            SELECT v.*, c.nombres as cliente_nombre, e.nombres as empleado_nombre
+            FROM ventas v
+            LEFT JOIN personas c ON v.id_cliente = c.id_persona
+            LEFT JOIN personas e ON v.id_empleado = e.id_persona
+            WHERE CAST(v.id_venta AS CHAR) LIKE %s 
+               OR c.nombres LIKE %s 
+               OR c.apellidos LIKE %s
+               OR DATE(v.fecha_venta) LIKE %s
+               OR v.metodo_pago LIKE %s
+               OR v.estado_venta LIKE %s
+            ORDER BY v.id_venta DESC
+        """, (f'%{search}%', f'%{search}%', f'%{search}%', f'%{search}%', f'%{search}%', f'%{search}%'))
+    else:
+        cur.execute("""
+            SELECT v.*, c.nombres as cliente_nombre, e.nombres as empleado_nombre
+            FROM ventas v
+            LEFT JOIN personas c ON v.id_cliente = c.id_persona
+            LEFT JOIN personas e ON v.id_empleado = e.id_persona
+            ORDER BY v.id_venta DESC
+        """)
+    ventas = cur.fetchall()
+    
+    # Datos para los selects del formulario de creación
     cur.execute("SELECT id_persona, nombres, apellidos FROM personas WHERE tipo_persona = 'CLIENTE' AND estado = 'ACTIVO'")
     clientes = cur.fetchall()
     cur.execute("SELECT id_persona, nombres, apellidos FROM personas WHERE tipo_persona = 'EMPLEADO' AND estado = 'ACTIVO'")
     empleados = cur.fetchall()
-    return render_template("ventas.html", ventas=data, clientes=clientes, empleados=empleados)
-
+    
+    return render_template("ventas.html", ventas=ventas, clientes=clientes, empleados=empleados, search=search)
 
 @app.route("/add_venta", methods=["POST"])
 def add_venta():

@@ -2,6 +2,29 @@
 
 {% block body %}
 
+<!--formulario de busqueda-->
+<div class="row mb-3">
+    <div class="col-md-12">
+        <form method="GET" action="{{ url_for('Index') }}" class="row g-2">
+            <div class="col-md-8">
+                <input type="text" name="search" class="form-control" 
+                       placeholder="Buscar por ID, nombre, cédula o correo..." 
+                       value="{{ search if search else '' }}">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary w-100">Buscar</button>
+            </div>
+        </form>
+        {% if search %}
+        <div class="mt-2">
+            <a href="{{ url_for('Index') }}" class="btn btn-secondary btn-sm">Limpiar búsqueda</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<!---->
+
+
 
 <div class="row">
     <div class="col-md-5">
@@ -107,5 +130,7 @@
         </table>
     </div>
 </div>
+
+
 
 {% endblock %}

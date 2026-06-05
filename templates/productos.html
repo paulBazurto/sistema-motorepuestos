@@ -2,6 +2,21 @@
 
 {% block body %}
 
+<!--formulario de busqueda-->
+<div class="col-md-12 mb-3">
+    <form method="GET" action="{{ url_for('productos') }}" class="row g-2">
+        <div class="col-md-8">
+            <input type="text" name="search" class="form-control" 
+                   placeholder="Buscar por nombre, marca, descripción o categoría..." 
+                   value="{{ search if search else '' }}">
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+        </div>
+    </form>
+</div>
+<!---->
+
 
 <div class="row">
     <div class="col-md-5">
