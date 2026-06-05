@@ -13,7 +13,7 @@ app.config["MYSQL_HOST"] = "localhost"
 app.config["MYSQL_USER"] = "root"
 app.config["MYSQL_PASSWORD"] = ""  
 app.config["MYSQL_DB"] = "motorepuestos"   
-
+#app.config["MYSQL_PORT"] = 3307
 mysql = MySQL(app)
 
 
@@ -458,7 +458,9 @@ def productos():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM productos")
     data = cur.fetchall()
-    return render_template("productos.html", productos=data)
+    cur.execute("SELECT id_categoria, nombre_categoria FROM categorias")
+    categorias = cur.fetchall()
+    return render_template("productos.html", productos=data, categorias=categorias)
 
 
 @app.route("/add_producto", methods=["POST"])
@@ -507,7 +509,9 @@ def get_producto(id):
         flash("El producto no existe")
         return redirect(url_for("productos"))
 
-    return render_template("edit-producto.html", producto=data[0])
+    cur.execute("SELECT id_categoria, nombre_categoria FROM categorias")
+    categorias = cur.fetchall()
+    return render_template("edit-producto.html", producto=data[0], categorias=categorias)
 
 
 @app.route("/update_producto/<id>", methods=["POST"])
@@ -586,7 +590,11 @@ def compras():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM compras")
     data = cur.fetchall()
-    return render_template("compras.html", compras=data)
+    cur.execute("SELECT id_persona, nombres, apellidos FROM personas WHERE tipo_persona = 'PROVEEDOR' AND estado = 'ACTIVO'")
+    proveedores = cur.fetchall()
+    cur.execute("SELECT id_persona, nombres, apellidos FROM personas WHERE tipo_persona = 'EMPLEADO' AND estado = 'ACTIVO'")
+    empleados = cur.fetchall()
+    return render_template("compras.html", compras=data, proveedores=proveedores, empleados=empleados)
 
 
 @app.route("/add_compra", methods=["POST"])
@@ -630,7 +638,11 @@ def get_compra(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM compras WHERE id_compra = %s", (id,))
     data = cur.fetchall()
-    return render_template("edit-compra.html", compra=data[0])
+    cur.execute("SELECT id_persona, nombres, apellidos FROM personas WHERE tipo_persona = 'PROVEEDOR' AND estado = 'ACTIVO'")
+    proveedores = cur.fetchall()
+    cur.execute("SELECT id_persona, nombres, apellidos FROM personas WHERE tipo_persona = 'EMPLEADO' AND estado = 'ACTIVO'")
+    empleados = cur.fetchall()
+    return render_template("edit-compra.html", compra=data[0], proveedores=proveedores, empleados=empleados)
 
 
 @app.route("/update_compra/<id>", methods=["POST"])
@@ -699,7 +711,11 @@ def detalle_compras():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM detalle_compras")
     data = cur.fetchall()
-    return render_template("detalle_compras.html", detalle_compras=data)
+    cur.execute("SELECT id_compra, numero_factura FROM compras")
+    compras = cur.fetchall()
+    cur.execute("SELECT id_producto, nombre_producto FROM productos")
+    productos = cur.fetchall()
+    return render_template("detalle_compras.html", detalle_compras=data, compras=compras, productos=productos)
 
 
 @app.route("/add_detalle_compra", methods=["POST"])
@@ -894,7 +910,11 @@ def ventas():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM ventas")
     data = cur.fetchall()
-    return render_template("ventas.html", ventas=data)
+    cur.execute("SELECT id_persona, nombres, apellidos FROM personas WHERE tipo_persona = 'CLIENTE' AND estado = 'ACTIVO'")
+    clientes = cur.fetchall()
+    cur.execute("SELECT id_persona, nombres, apellidos FROM personas WHERE tipo_persona = 'EMPLEADO' AND estado = 'ACTIVO'")
+    empleados = cur.fetchall()
+    return render_template("ventas.html", ventas=data, clientes=clientes, empleados=empleados)
 
 
 @app.route("/add_venta", methods=["POST"])
@@ -937,7 +957,11 @@ def get_venta(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM ventas WHERE id_venta = %s", (id,))
     data = cur.fetchall()
-    return render_template("edit-venta.html", venta=data[0])
+    cur.execute("SELECT id_persona, nombres, apellidos FROM personas WHERE tipo_persona = 'CLIENTE' AND estado = 'ACTIVO'")
+    clientes = cur.fetchall()
+    cur.execute("SELECT id_persona, nombres, apellidos FROM personas WHERE tipo_persona = 'EMPLEADO' AND estado = 'ACTIVO'")
+    empleados = cur.fetchall()
+    return render_template("edit-venta.html", venta=data[0], clientes=clientes, empleados=empleados)
 
 
 @app.route("/update_venta/<id>", methods=["POST"])
@@ -998,7 +1022,11 @@ def detalle_ventas():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM detalle_ventas")
     data = cur.fetchall()
-    return render_template("detalle_ventas.html", detalle_ventas=data)
+    cur.execute("SELECT id_venta, fecha_venta FROM ventas")  
+    ventas = cur.fetchall()
+    cur.execute("SELECT id_producto, nombre_producto FROM productos")
+    productos = cur.fetchall()
+    return render_template("detalle_ventas.html", detalle_ventas=data, ventas=ventas, productos=productos)
 
 
 @app.route("/add_detalle_venta", methods=["POST"])
@@ -1073,7 +1101,11 @@ def get_detalle_venta(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM detalle_ventas WHERE id_detalle_venta = %s", (id,))
     data = cur.fetchall()
-    return render_template("edit-detalle-venta.html", detalle_venta=data[0])
+    cur.execute("SELECT id_venta, fecha_venta FROM ventas")
+    ventas = cur.fetchall()
+    cur.execute("SELECT id_producto, nombre_producto FROM productos")
+    productos = cur.fetchall()
+    return render_template("edit-detalle-venta.html", detalle_venta=data[0], ventas=ventas, productos=productos)
 
 
 @app.route("/update_detalle_venta/<id>", methods=["POST"])

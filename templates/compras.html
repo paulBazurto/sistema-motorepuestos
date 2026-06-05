@@ -19,16 +19,28 @@
         <div class="card card-body">
             <form action="/add_compra" method="POST">
                 <div class="form-group">
-                    <input type="text" name="fecha_compra" placeholder="Fecha Compra" class="form-control border-0 border-bottom rounded-0">
+                    <input type="date" name="fecha_compra" placeholder="Fecha Compra"
+                        class="form-control border-0 border-bottom rounded-0" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="numero_factura" placeholder="Numero Factura" class="form-control border-0 border-bottom rounded-0">
+                    <input type="text" name="numero_factura" placeholder="Numero Factura"
+                        class="form-control border-0 border-bottom rounded-0">
                 </div>
                 <div class="form-group">
-                    <input type="text" name="id_proveedor" placeholder="ID Proveedor" class="form-control border-0 border-bottom rounded-0">
+                    <select name="id_proveedor" class="form-control border-0 border-bottom rounded-0" required>
+                        <option value="">Seleccione un proveedor</option>
+                        {% for prov in proveedores %}
+                        <option value="{{ prov.0 }}">{{ prov.1 }} {{ prov.2 }} (ID: {{ prov.0 }})</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="id_empleado" placeholder="ID Empleado" class="form-control border-0 border-bottom rounded-0">
+                    <select name="id_empleado" class="form-control border-0 border-bottom rounded-0" required>
+                        <option value="">Seleccione un empleado</option>
+                        {% for emp in empleados %}
+                        <option value="{{ emp.0 }}">{{ emp.1 }} {{ emp.2 }} (ID: {{ emp.0 }})</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="form-group">
                     <select name="estado_compra" class="form-control border-0 border-bottom rounded-0">

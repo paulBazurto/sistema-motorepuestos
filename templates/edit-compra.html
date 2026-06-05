@@ -8,26 +8,42 @@
         <form action="/update_compra/{{ compra.0 }}" method="POST">
 
             <div class="form-group">
-                <input type="text" name="fecha_compra" placeholder="Fecha Compra" value="{{ compra.1 }}" class="form-control">
+                <input type="date" name="fecha_compra" value="{{ compra.1 }}" class="form-control" required>
             </div>
 
             <div class="form-group">
-                <input type="text" name="numero_factura" placeholder="Numero Factura" value="{{ compra.2 }}" class="form-control">
+                <input type="text" name="numero_factura" placeholder="Numero Factura" value="{{ compra.2 }}"
+                    class="form-control">
+            </div>
+
+
+            <div class="form-group">
+                <select name="id_proveedor" class="form-control" required>
+                    <option value="">Seleccione un proveedor</option>
+                    {% for prov in proveedores %}
+                    <option value="{{ prov.0 }}" {% if prov.0==compra.3 %}selected{% endif %}>
+                        {{ prov.1 }} {{ prov.2 }} (ID: {{ prov.0 }})
+                    </option>
+                    {% endfor %}
+                </select>
             </div>
 
             <div class="form-group">
-                <input type="text" name="id_proveedor" placeholder="ID Proveedor" value="{{ compra.3 }}" class="form-control">
-            </div>
-
-            <div class="form-group">
-                <input type="text" name="id_empleado" placeholder="ID Empleado" value="{{ compra.4 }}" class="form-control">
+                <select name="id_empleado" class="form-control" required>
+                    <option value="">Seleccione un empleado</option>
+                    {% for emp in empleados %}
+                    <option value="{{ emp.0 }}" {% if emp.0==compra.4 %}selected{% endif %}>
+                        {{ emp.1 }} {{ emp.2 }} (ID: {{ emp.0 }})
+                    </option>
+                    {% endfor %}
+                </select>
             </div>
 
             <div class="form-group">
                 <select name="estado_compra" class="form-control">
-                    <option value="PENDIENTE" {% if compra.8 == 'PENDIENTE' %}selected{% endif %}>PENDIENTE</option>
-                    <option value="PAGADA" {% if compra.8 == 'PAGADA' %}selected{% endif %}>PAGADA</option>
-                    <option value="ANULADA" {% if compra.8 == 'ANULADA' %}selected{% endif %}>ANULADA</option>
+                    <option value="PENDIENTE" {% if compra.8=='PENDIENTE' %}selected{% endif %}>PENDIENTE</option>
+                    <option value="PAGADA" {% if compra.8=='PAGADA' %}selected{% endif %}>PAGADA</option>
+                    <option value="ANULADA" {% if compra.8=='ANULADA' %}selected{% endif %}>ANULADA</option>
                 </select>
             </div>
 

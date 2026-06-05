@@ -35,9 +35,14 @@
                 <input type="number" name="stock_minimo" placeholder="Stock Minimo" value="{{ producto.7 }}" class="form-control">
             </div>
 
-            <div class="form-group">
-                <input type="number" name="id_categoria" placeholder="ID Categoria" value="{{ producto.8 }}" class="form-control">
-            </div>
+        <div class="form-group">
+            <select name="id_categoria" class="form-control" required>
+                <option value="">Seleccione una categoría</option>
+                {% for cat in categorias %}
+                <option value="{{ cat.0 }}" {% if cat.0==producto.8 %}selected{% endif %}>{{ cat.1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
             <div class="form-group">
                 <button type="submit" class="btn btn-success btn-block w-100">
