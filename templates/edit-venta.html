@@ -3,48 +3,60 @@
 
 <div class="col-md-4 offset-md-4">
     <div class="card card-body">
-        <form action="/update_detalle_venta/{{ detalle_venta.0 }}" method="POST">
 
-            <!-- Select para Venta (preseleccionado) -->
+        <form action="/update_venta/{{ venta.0 }}" method="POST">
+
             <div class="form-group">
-                <select name="id_venta" class="form-control" required>
-                    <option value="">Seleccione una venta</option>
-                    {% for v in ventas %}
-                    <option value="{{ v.0 }}" {% if v.0 == detalle_venta.1 %}selected{% endif %}>
-                        Venta #{{ v.0 }} - Fecha: {{ v.1 }}
-                    </option>
-                    {% endfor %}
-                </select>
+                <input type="text" name="fecha_venta" placeholder="Fecha Venta" value="{{ venta.1 }}" class="form-control">
             </div>
 
-            <!-- Select para Producto (preseleccionado) -->
             <div class="form-group">
-                <select name="id_producto" class="form-control" required>
-                    <option value="">Seleccione un producto</option>
-                    {% for p in productos %}
-                    <option value="{{ p.0 }}" {% if p.0 == detalle_venta.2 %}selected{% endif %}>
-                        {{ p.1 }} (ID: {{ p.0 }})
+                <select name="id_cliente" class="form-control" required>
+                    <option value="">Seleccione un cliente</option>
+                    {% for cliente in clientes %}
+                    <option value="{{ cliente.0 }}" {% if cliente.0 == venta.2 %}selected{% endif %}>
+                        {{ cliente.1 }} {{ cliente.2 }} (ID: {{ cliente.0 }})
                     </option>
                     {% endfor %}
                 </select>
             </div>
 
             <div class="form-group">
-                <input type="number" name="cantidad" placeholder="Cantidad" value="{{ detalle_venta.3 }}" class="form-control" required>
+                <select name="id_empleado" class="form-control" required>
+                    <option value="">Seleccione un empleado</option>
+                    {% for empleado in empleados %}
+                    <option value="{{ empleado.0 }}" {% if empleado.0 == venta.3 %}selected{% endif %}>
+                        {{ empleado.1 }} {{ empleado.2 }} (ID: {{ empleado.0 }})
+                    </option>
+                    {% endfor %}
+                </select>
             </div>
 
             <div class="form-group">
-                <input type="number" step="0.01" name="precio_unitario" placeholder="Precio Unitario" value="{{ detalle_venta.4 }}" class="form-control" required>
+                <select name="metodo_pago" class="form-control" required>
+                    <option value="EFECTIVO" {% if venta.8 == 'EFECTIVO' %}selected{% endif %}>EFECTIVO</option>
+                    <option value="TRANSFERENCIA" {% if venta.8 == 'TRANSFERENCIA' %}selected{% endif %}>TRANSFERENCIA</option>
+                    <option value="TARJETA" {% if venta.8 == 'TARJETA' %}selected{% endif %}>TARJETA</option>
+                    <option value="CREDITO" {% if venta.8 == 'CREDITO' %}selected{% endif %}>CREDITO</option>
+                </select>
             </div>
 
             <div class="form-group">
-                <input type="number" step="0.01" name="descuento" placeholder="Descuento" value="{{ detalle_venta.5 }}" class="form-control">
+                <select name="estado_venta" class="form-control" required>
+                    <option value="PAGADA" {% if venta.9 == 'PAGADA' %}selected{% endif %}>PAGADA</option>
+                    <option value="PENDIENTE" {% if venta.9 == 'PENDIENTE' %}selected{% endif %}>PENDIENTE</option>
+                    <option value="ANULADA" {% if venta.9 == 'ANULADA' %}selected{% endif %}>ANULADA</option>
+                </select>
             </div>
 
             <div class="form-group mt-3">
-                <button type="submit" class="btn btn-success w-100">Guardar</button>
+                <button type="submit" class="btn btn-success w-100">
+                    Guardar
+                </button>
             </div>
+
         </form>
+
     </div>
 </div>
 
