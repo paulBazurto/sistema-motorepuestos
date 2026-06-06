@@ -1160,6 +1160,13 @@ def update_venta(id):
 @app.route("/eliminar_venta/<string:id>")
 def delete_venta(id):
     cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM detalle_ventas WHERE id_venta = %s", (id,))
+    detalles = cur.fetchall()
+
+    if len(detalles) > 0:
+        flash("No se puede eliminar la venta porque tiene detalles registrados")
+        return redirect(url_for("ventas"))
+        
     cur.execute("DELETE FROM ventas WHERE id_venta = %s", (id,))
     mysql.connection.commit()
 
