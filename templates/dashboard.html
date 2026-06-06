@@ -1,0 +1,212 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<style>
+    .panel-dashboard {
+        background: #f3f4f6;
+        border-radius: 10px;
+        padding: 22px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+        border-top: 4px solid #a3e635;
+    }
+
+    .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #d1d5db;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    .panel-header h3 {
+        margin: 0;
+        color: #111827;
+        font-weight: 700;
+    }
+
+    .panel-header span {
+        color: #4b5563;
+        font-size: 14px;
+    }
+
+    .resumen-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 25px;
+    }
+
+    .resumen-item {
+        background: #ffffff;
+        padding: 18px;
+        border-right: 1px solid #d1d5db;
+        border-bottom: 1px solid #d1d5db;
+    }
+
+    .resumen-item:nth-child(4),
+    .resumen-item:nth-child(8) {
+        border-right: none;
+    }
+
+    .resumen-label {
+        color: #4b5563;
+        font-size: 13px;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .resumen-valor {
+        color: #111827;
+        font-size: 26px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .resumen-linea {
+        width: 35px;
+        height: 3px;
+        background: #a3e635;
+        margin-top: 8px;
+        border-radius: 10px;
+    }
+
+    .seccion-tabla {
+        background: #ffffff;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 18px;
+    }
+
+    .seccion-tabla h4 {
+        color: #111827;
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .estado-bajo {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 5px 9px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    @media (max-width: 900px) {
+        .resumen-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .resumen-item:nth-child(2),
+        .resumen-item:nth-child(4),
+        .resumen-item:nth-child(6),
+        .resumen-item:nth-child(8) {
+            border-right: none;
+        }
+    }
+</style>
+
+
+<div class="panel-dashboard">
+
+    <div class="panel-header">
+        <div>
+            <h3>Panel principal</h3>
+            <span>Resumen general del sistema de compra y venta de motorepuestos</span>
+        </div>
+
+    </div>
+
+
+    <div class="resumen-grid">
+
+        <div class="resumen-item">
+            <div class="resumen-label">Clientes</div>
+            <p class="resumen-valor">{{ total_clientes }}</p>
+            <div class="resumen-linea"></div>
+        </div>
+
+        <div class="resumen-item">
+            <div class="resumen-label">Proveedores</div>
+            <p class="resumen-valor">{{ total_proveedores }}</p>
+            <div class="resumen-linea"></div>
+        </div>
+
+        <div class="resumen-item">
+            <div class="resumen-label">Empleados</div>
+            <p class="resumen-valor">{{ total_empleados }}</p>
+            <div class="resumen-linea"></div>
+        </div>
+
+        <div class="resumen-item">
+            <div class="resumen-label">Productos</div>
+            <p class="resumen-valor">{{ total_productos }}</p>
+            <div class="resumen-linea"></div>
+        </div>
+
+        <div class="resumen-item">
+            <div class="resumen-label">Compras registradas</div>
+            <p class="resumen-valor">{{ total_compras }}</p>
+            <div class="resumen-linea"></div>
+        </div>
+
+        <div class="resumen-item">
+            <div class="resumen-label">Ventas registradas</div>
+            <p class="resumen-valor">{{ total_ventas }}</p>
+            <div class="resumen-linea"></div>
+        </div>
+
+        <div class="resumen-item">
+            <div class="resumen-label">Total comprado</div>
+            <p class="resumen-valor">${{ total_comprado }}</p>
+            <div class="resumen-linea"></div>
+        </div>
+
+        <div class="resumen-item">
+            <div class="resumen-label">Total vendido</div>
+            <p class="resumen-valor">${{ total_vendido }}</p>
+            <div class="resumen-linea"></div>
+        </div>
+
+    </div>
+
+
+    <div class="seccion-tabla">
+        <h4>Productos con stock bajo</h4>
+
+        <table class="table table-striped table-bordered table-sm">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>Producto</td>
+                    <td>Stock Actual</td>
+                    <td>Stock Mínimo</td>
+                    <td>Estado</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos_bajo_stock %}
+                <tr>
+                    <td>{{ producto.0 }}</td>
+                    <td>{{ producto.1 }}</td>
+                    <td>{{ producto.2 }}</td>
+                    <td>{{ producto.3 }}</td>
+                    <td>
+                        <span class="estado-bajo">Stock bajo</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

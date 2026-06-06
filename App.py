@@ -155,7 +155,7 @@ def login_required(f):
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if 'empleado_id' in session:
-        return redirect(url_for('Index'))
+        return redirect(url_for('dashboard'))
     
     if request.method == "POST":
         usuario = request.form["usuario"]
@@ -176,7 +176,7 @@ def login():
             session['empleado_nombre'] = f"{empleado[1]} {empleado[2]}"
             session['empleado_cargo'] = empleado[3]
             flash(f"Bienvenido, {empleado[1]}!")
-            return redirect(url_for('Index'))
+            return redirect(url_for('dashboard'))
         else:
             flash("Usuario o contraseña incorrectos")
             return redirect(url_for('login'))
@@ -189,6 +189,57 @@ def logout():
     session.clear()
     flash("Sesión cerrada correctamente")
     return redirect(url_for('login'))
+
+
+# DASHBOARD
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    cur = mysql.connection.cursor()
+
+    cur.execute("SELECT COUNT(*) FROM personas WHERE tipo_persona = 'CLIENTE'")
+    total_clientes = cur.fetchone()[0]
+
+    cur.execute("SELECT COUNT(*) FROM personas WHERE tipo_persona = 'PROVEEDOR'")
+    total_proveedores = cur.fetchone()[0]
+
+    cur.execute("SELECT COUNT(*) FROM personas WHERE tipo_persona = 'EMPLEADO'")
+    total_empleados = cur.fetchone()[0]
+
+    cur.execute("SELECT COUNT(*) FROM productos")
+    total_productos = cur.fetchone()[0]
+
+    cur.execute("SELECT COUNT(*) FROM compras")
+    total_compras = cur.fetchone()[0]
+
+    cur.execute("SELECT COUNT(*) FROM ventas")
+    total_ventas = cur.fetchone()[0]
+
+    cur.execute("SELECT IFNULL(SUM(total_compra), 0) FROM compras")
+    total_comprado = cur.fetchone()[0]
+
+    cur.execute("SELECT IFNULL(SUM(total_venta), 0) FROM ventas")
+    total_vendido = cur.fetchone()[0]
+
+    cur.execute("""
+        SELECT id_producto, nombre_producto, stock_actual, stock_minimo
+        FROM productos
+        WHERE stock_actual <= stock_minimo
+    """)
+    productos_bajo_stock = cur.fetchall()
+
+    return render_template("dashboard.html",
+        total_clientes=total_clientes,
+        total_proveedores=total_proveedores,
+        total_empleados=total_empleados,
+        total_productos=total_productos,
+        total_compras=total_compras,
+        total_ventas=total_ventas,
+        total_comprado=total_comprado,
+        total_vendido=total_vendido,
+        productos_bajo_stock=productos_bajo_stock
+    )
 
 
 # PERSONAS

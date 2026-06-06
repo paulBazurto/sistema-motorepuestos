@@ -5,3 +5,46 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 
 }
 
+/* ESTILO DE TABLAS*/
+.container .col-md-7,
+.container .seccion-tabla {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.30);
+    border-top: 4px solid #a3e635;
+    max-width: 100%;
+}
+
+.container table.table {
+    background: #ffffff !important;
+    margin-bottom: 0;
+    width: 100% !important;
+    table-layout: auto;}
+.container table.table thead tr td,
+.container table.table thead tr th {
+    background: #3a4048 !important;
+    color: #a3e635 !important;
+    font-weight: 700;
+    border-color: #525a66 !important;
+    font-size: 14px;}
+.container table.table tbody tr td {
+    color: #111827 !important;
+    border-color: #d1d5db !important;
+    vertical-align: top;
+    font-size: 14px;
+    word-break: break-word;}
+.container table.table-striped tbody tr:nth-of-type(odd) td {
+    background: #f8fafc !important;
+}
+.container table.table-striped tbody tr:nth-of-type(even) td {
+    background: #ffffff !important;}
+.container table.table tbody tr:hover td {
+    background: #ecfccb !important;}
+.container table.table tbody tr td:last-child {
+    min-width: 95px;}
+.container table.table tbody tr td:last-child .btn {
+    display: block;
+    width: 100%;
+    margin-bottom: 4px;
+    font-size: 13px;}
