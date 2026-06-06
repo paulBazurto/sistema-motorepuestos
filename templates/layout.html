@@ -21,13 +21,13 @@
 
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     {% if session.empleado_id %}
-                    <li class="nav-item"><a class="nav-link active" href="/">Personas</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/categorias">Categorías</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/productos">Productos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/compras">Compras</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/detalle_compras">Detalle Compras</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/ventas">Ventas</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/detalle_ventas">Detalle Ventas</a></li>
+                    <li class="nav-item"><a class="nav-link {% if request.path == '/' %}seleccionado{% endif %}" href="/">Personas</a></li>
+                    <li class="nav-item"><a class="nav-link {% if request.path == '/categorias' %}seleccionado{% endif %}" href="/categorias">Categorías</a></li>
+                    <li class="nav-item"><a class="nav-link {% if request.path == '/productos' %}seleccionado{% endif %}" href="/productos">Productos</a></li>
+                    <li class="nav-item"><a class="nav-link {% if request.path == '/compras' %}seleccionado{% endif %}" href="/compras">Compras</a></li>
+                    <li class="nav-item"><a class="nav-link {% if request.path == '/detalle_compras' %}seleccionado{% endif %}" href="/detalle_compras">Detalle Compras</a></li>
+                    <li class="nav-item"><a class="nav-link {% if request.path == '/ventas' %}seleccionado{% endif %}" href="/ventas">Ventas</a></li>
+                    <li class="nav-item"><a class="nav-link {% if request.path == '/detalle_ventas' %}seleccionado{% endif %}"href="/detalle_ventas">Detalle Ventas</a></li>
                     {% endif %}
                 </ul>
 
