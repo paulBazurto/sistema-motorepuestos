@@ -259,10 +259,10 @@ def Index():
                OR apellidos LIKE %s 
                OR cedula_ruc LIKE %s 
                OR correo LIKE %s
-            ORDER BY id_persona DESC
+            ORDER BY id_persona ASC
         """, (f'%{search}%', f'%{search}%', f'%{search}%', f'%{search}%', f'%{search}%'))
     else:
-        cur.execute("SELECT * FROM personas ORDER BY id_persona DESC")
+        cur.execute("SELECT * FROM personas ORDER BY id_persona ASC")
     
     personas = cur.fetchall()
     return render_template("index.html", personas=personas, search=search)
@@ -408,7 +408,7 @@ def delete_persona(id):
 @login_required
 def categorias():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM categorias")
+    cur.execute("SELECT * FROM categorias ORDER BY id_categoria ASC") 
     data = cur.fetchall()
     return render_template("categorias.html", categorias=data)
 
@@ -533,7 +533,7 @@ def productos():
                OR p.marca LIKE %s 
                OR p.descripcion LIKE %s
                OR c.nombre_categoria LIKE %s
-            ORDER BY p.id_producto DESC
+            ORDER BY p.id_producto ASC
         """, (f'%{search}%', f'%{search}%', f'%{search}%', f'%{search}%'))
         productos = cur.fetchall()
     else:
@@ -541,7 +541,7 @@ def productos():
             SELECT p.*, c.nombre_categoria 
             FROM productos p
             LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
-            ORDER BY p.id_producto DESC
+            ORDER BY p.id_producto ASC
         """)
         productos = cur.fetchall()
     
@@ -713,7 +713,7 @@ def compras():
         query += " AND c.estado_compra = %s"
         params.append(estado)
     
-    query += " ORDER BY c.id_compra DESC"
+    query += " ORDER BY c.id_compra ASC"
     cur.execute(query, params)
     compras = cur.fetchall()
     
@@ -838,7 +838,7 @@ def delete_compra(id):
 @login_required
 def detalle_compras():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM detalle_compras")
+    cur.execute("SELECT * FROM detalle_compras ORDER BY id_detalle_compra ASC")
     data = cur.fetchall()
     cur.execute("SELECT id_compra, numero_factura FROM compras")
     compras = cur.fetchall()
@@ -1050,7 +1050,7 @@ def ventas():
                OR DATE(v.fecha_venta) LIKE %s
                OR v.metodo_pago LIKE %s
                OR v.estado_venta LIKE %s
-            ORDER BY v.id_venta DESC
+            ORDER BY v.id_venta ASC
         """, (f'%{search}%', f'%{search}%', f'%{search}%', f'%{search}%', f'%{search}%', f'%{search}%'))
     else:
         cur.execute("""
@@ -1058,7 +1058,7 @@ def ventas():
             FROM ventas v
             LEFT JOIN personas c ON v.id_cliente = c.id_persona
             LEFT JOIN personas e ON v.id_empleado = e.id_persona
-            ORDER BY v.id_venta DESC
+            ORDER BY v.id_venta ASC
         """)
     ventas = cur.fetchall()
     
@@ -1180,7 +1180,7 @@ def delete_venta(id):
 @login_required
 def detalle_ventas():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM detalle_ventas")
+    cur.execute("SELECT * FROM detalle_ventas ORDER BY id_detalle_venta ASC")
     data = cur.fetchall()
     cur.execute("SELECT id_venta, fecha_venta FROM ventas")  
     ventas = cur.fetchall()
